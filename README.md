@@ -1,5 +1,5 @@
 # Phase1BlackJack
-Before you run this code, make sure 'Numpy' library is installed on your local machine. 
+Before you run this code, make sure 'Numpy' library and "random' library are installed on your local machine. 
 The code will be able to run on any python compiler and following ways:
 1) Idle: open command prompt -> go to the library where file is saved -> run "python file-name.py" 
 2) Jupyter notebook: open anaconda -> open jupyter notebook -> open the file from document or download file (prefered to save in those folders when downloading) -> run the code

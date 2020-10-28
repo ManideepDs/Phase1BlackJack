@@ -4,6 +4,7 @@ The code will be able to run on any python compiler and following ways:
 1) Idle: open command prompt -> go to the library where file is saved -> run "python file-name.py" 
 2) Jupyter notebook: open anaconda -> open jupyter notebook -> open the file from document or download file (prefered to save in those folders when downloading) -> run the code
 3) Pycharm: open pycharm -> install numpy dependency (file -> settings -> project: -> python interpreter -> '+' on top right corner -> search numpy and install) -> run the code
+
 In order to play the game:
 1) Run the code
 2) Press 'H' or 'h' to use hit function, 

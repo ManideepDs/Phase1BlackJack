@@ -1,4 +1,4 @@
-# Phase1BlackJack
+# Phase-1 BlackJack
 Before you run this code, make sure 'Numpy' library and "random' library are installed on your local machine. 
 The code will be able to run on any python compiler and following ways:
 1) Idle: open command prompt -> go to the library where file is saved -> run "python file-name.py" 

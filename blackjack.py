@@ -4,7 +4,7 @@ import random
 
 #groups of deck in cards:
 groups = np.array(["_Clubs", "_Diamonds", "_Hearts", "_Spade"], dtype=str)
-value = np.array(["2","3","4","5","6","7","8","9","10","J","Q","K","A"],dtype=str).reshape(13,1)
+value = np.array(["2","3","4","5","6","7","8","9","10","J","Q","K","ace"],dtype=str).reshape(13,1)
 deck_lookup = np.char.add(value,groups)
 global player_sum, dealer_sum
 
@@ -65,7 +65,7 @@ class BlackJack():
         for i,j in x:
             if i[0].isnumeric() & (i[0] != '1'):
                 self.playerHand += int(i[0])*self.playerCardsSign[j]
-            elif i[0] == 'A':
+            elif i[0] == 'a':
                 self.playerHand += self.ace_val(self.playerHand,self.playerCardsSign[j])
             else:
                 self.playerHand += 10*self.playerCardsSign[j]
@@ -76,7 +76,7 @@ class BlackJack():
         for i,j in x:
             if i[0].isnumeric() & (i[0] != '1'):
                 self.dealerHand += int(i[0])*self.dealerCardsSign[j]
-            elif i[0] == 'A':
+            elif i[0] == 'a':
                 self.dealerHand += self.ace_val(self.dealerHand,self.dealerCardsSign[j])
             else:
                 self.dealerHand += 10*self.dealerCardsSign[j]
@@ -99,6 +99,7 @@ class BlackJack():
       return 0
   
     def stand(self): #no more hits on players card
+        self.dealerTurn()
         return self.compare() 
     
     def bust(self):
@@ -114,8 +115,17 @@ class BlackJack():
         	print("Dealer wins")
         else:
         	print("Draw")
-        self.restart()
+        #Pself.restart()
         return 
+    
+    def dealerTurn(self):
+        #Dealer keeps hitting untill he reaches a score of 17  irrespective of players score
+        while(self.dealerHand < 17 ):
+            self.dealerCards=np.append(self.dealerCards,self.deck[0])
+            self.dealerCardsSign = np.append(self.dealerCardsSign, +1)
+            self.deck = self.deck[1:]
+            self.DealerHand()
+        return
      
 
 if __name__ == "__main__":
@@ -179,11 +189,11 @@ if __name__ == "__main__":
                         print("\nPlayer Cards:", carddeck.playerCards)
                         print("\nPlayer score:", carddeck.playerHand)
                 elif (choice == 'S' or choice =='s'):
+                    carddeck.stand()
                     print("\nPlayer Cards:", carddeck.playerCards)
                     print("\nPlayer score:", carddeck.playerHand)
                     print("\nDealer Cards:", carddeck.dealerCards)
-                    print("\nDealer SCore:", carddeck.dealerHand)
-                    carddeck.stand()
+                    print("\nDealer Score:", carddeck.dealerHand)
                     print("____________________________________________________________")
                     break
                 else:

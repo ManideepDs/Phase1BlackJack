@@ -295,7 +295,7 @@ if __name__ == "__main__":
     plt.title("Blackjack basic AI graph")
     plt.ylabel("Total Games")
     plt.xlabel("Player win/Player lose/Dealer win/Dealer lose/ Draw")
-    plt.hist(totalgames)
+    plt.ylim(None, totalgames)
     plt.hist(playerwin,color = 'red')
     plt.hist(playerlose,color = 'yellow')
     plt.hist(dealerwin,color = 'green')

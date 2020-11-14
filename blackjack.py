@@ -123,6 +123,7 @@ class BlackJack():
         member.hand = self.handValue(member)
         return member
     
+    
     def stand(self): #no more hits on players card
         return self.compare() 
     
@@ -223,12 +224,14 @@ class BlackJack():
                             self.log = log.PLayer_Won
                             playerwin += 1
                             dealerlose += 1
+                            break
                             print("Player hand and Dealer hand are equal. PLAYER WON by the count of cards.")
                         else:
                             self.log = log.Dealer_Won
                             dealerwin += 1
                             playerlose += 1
                             print("Player hand and Dealer hand are equal. DEALER WON by the count of cards.")
+                        break
                     else:
                         self.log = log.PLayer_Won
                         playerwin += 1
@@ -277,12 +280,13 @@ class BlackJack():
 
 if __name__ == "__main__":
     #choose num deck
-    carddeck = BlackJack()
+    
     gamenum = 0
     while True:
         a = input("\nEnter an action: P: PLAY, Q:QUIT - ")
         if(a == "p" or a == "P"):
             print("**** GAME BEGINS ****")
+            carddeck = BlackJack()
             gamenum += 1
             print("This is Game number", gamenum )
             b = input("Which AI do you want to play with? ")

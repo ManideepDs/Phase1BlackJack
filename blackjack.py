@@ -1,5 +1,6 @@
 import numpy as np
 import random
+from enum import Enum 
 #Initialize the required variables
 
 #groups of deck in cards:
@@ -8,16 +9,46 @@ value = np.array(["2","3","4","5","6","7","8","9","10","J","Q","K","ace"],dtype=
 deck_lookup = np.char.add(value,groups)
 global player_sum, dealer_sum
 
+class Player():
+    def __init__(self):
+        self.cards = []
+        self.hand = 0
+        self.cardsSign = [+1,+1]
+    
+    def __str__(self):
+        string = ""
+        for i,j in zip(self.cards, self.cardsSign):
+            string += str(j)+" " + i + " | "
+        return "\n__PLAYER__\n"+string+"\nHand Value: " + str(self.hand)
+
+class Dealer():
+    def __init__(self):
+        self.cards = []
+        self.hand = 0
+        self.cardsSign = [+1,+1]
+    
+    def __str__(self):
+        string = ""
+        for i,j in zip(self.cards, self.cardsSign):
+            string += str(j)+" " + i + " | "
+        return "\n__DEALER__\n"+string+"\nHand Value: "+str(self.hand)
+
+class log(Enum):
+    Continue_Game = 1
+    Player_Busted = 2
+    Dealer_Busted = 3
+    PLayer_Won = 4 
+    Dealer_Won = 5 
+    Game_Drawn = 6
+    Invalid_Choice_Interupption = 7 
 
 class BlackJack():
     def __init__(self):
         self.deck = deck_lookup.flatten()
-        self.dealerCards = []
-        self.dealerCardsSign = [+1,+1]
-        self.playerCards = []
-        self.playerCardsSign = [+1,+1]
-        self.playerHand = 0
-        self.dealerHand = 0
+        self.dealer = Dealer()
+        self.player = Player()
+        self.numDeck = 1
+        self.log = log.Continue_Game
         #self.__threshold = threshold
         #1.deck , 2.dealer, 3.player, 4.sign
         self.gameStatus = np.full((4,13,4),0)
@@ -27,20 +58,16 @@ class BlackJack():
     
     def deal(self):
         self.__shuffleDeck()
-        #print("\nDeck after shuffing:")
-        #print(self.deck)
-        self.dealerCards = self.deck[0:4:2]
-        self.playerCards = self.deck[1:4:2]
+        self.dealer.cards = self.deck[0:4:2]
+        self.player.cards = self.deck[1:4:2]
         self.deck = self.deck[4:]
-        self.PlayerHand()
-        self.DealerHand()
-
+        self.player.hand = self.handValue(self.player)
+        self.dealer.hand = self.handValue(self.dealer)
     
-    def face_value(self): #adding values to face cards such as jack,queen,king are 10 and remaining cards obtain same value as written on card except ace
-        value = {'2': 2,'3' : 3,'4' : 4,' 5' : 5,'6' : 6,'7' : 7,'8' : 8,'9' : 9,'10' : 10,'J' : 10,'Q' : 10,'K' : 10} #creating a dictionary
-        return value
-    
-    def ace_val(self,current_sum, sign): #determining whether ace needs to be 1 or 11
+    def ace_val(self,current_sum,sign): 
+        """
+        Determining whether ace needs to be 1 or 11
+        """
         if(sign == +1):
             if(current_sum+11 <= 21):
                 return 11
@@ -49,7 +76,135 @@ class BlackJack():
             if(current_sum >= 12):
                 return -11
             return -1
+    
+    def handValue(self,member):
+        """
+        Calculate hand value of player/dealer at any point in the game.
+        """
+        x = zip(np.sort(member.cards), np.argsort(member.cards))
+        hand = 0
+        for i,j in x:
+            if i[0].isnumeric() & (i[0] != '1'):
+                hand += int(i[0])*member.cardsSign[j]
+            elif i[0] == 'a':
+                hand += self.ace_val(hand,member.cardsSign[j])
+            else:
+                hand += 10*member.cardsSign[j]
+        return hand
+    
+    def hit(self, member, sign):
+        """
+        Each turn, player gets asked whether they want to add or subtract the next card value before the next card is dealt. 
+        If its above 21, automatically busts, if not keep going until stand or bust
+        """
+        #choice2 = input("Press + to add next card to total!! or Press - to subtract next card to total")
+        member.cards = np.append(member.cards, self.deck[0])
+        self.deck = self.deck[1:]
+        if sign == '+':
+            member.cardsSign = np.append(member.cardsSign, +1)
+        elif sign == '-':
+            member.cardsSign = np.append(member.cardsSign, -1)
+        else:
+            return None
+        member.hand = self.handValue(member)
+        return member
+    
+    def stand(self): #no more hits on players card
+        return self.compare() 
+    
+    def bust(self):
+        if self.player.hand>21:
+            return "Player Busted"
+        elif self.dealer.hand>21:
+            return "Dealer Busted"
+ 
+    def compare(self): #compare player and dealers card value to determine who wins
+        if self.dealer.hand < self.player.hand:
+        	print("Player wins")
+        elif self.dealer.hand > self.player.hand:
+        	print("Dealer wins")
+        else:
+        	print("Draw")
+        #self.restart()
+        return 
 
+    def beginGame(self):
+        print("**** GAME BEGINS ****")
+        print("\n......Dealing cards......")
+        print("\n....Shuffing the deck....")
+        self.deal()
+        print(self.player)
+        print("\n __Dealer__:")
+        print(self.dealer.cards[0])
+        print("____________________________________________________________")
+        print("\n** PLAYERS TURN  **")
+
+    def playerTurn(self):
+        """
+        Player Controls Implementation
+        """
+        gameStatus = False
+        while True:
+            choice=input("\nDo you want to Hit [Press H] or Stand [Press S]")
+            if (choice == 'H' or choice ==  'h'):
+                choice2 = input("Press + to add next card to total!! or Press - to subtract next card to total")
+                self.player = self.hit(self.player, choice2)
+                if(self.player == None):
+                    self.log = log.Invalid_Choice_Interupption
+                    gameStatus = True
+                    print("\n**** Invalid Choice - GAME INTERRUPTED ****")
+                    print("\n")
+                    break
+                if(self.player.hand > 21 or self.player.hand <= 1):
+                    self.log = log.Player_Busted
+                    gameStatus = True
+                    print(self.player)
+                    print(self.dealer)
+                    print("\nBusted the threshold - You Lost")
+                    break
+                elif(self.player.hand == 21):
+                    gameStatus = True
+                    print(self.player)
+                    print(self.dealer)
+                    if(self.dealer.hand == 21):
+                        if(len(self.dealer.cards) == len(self.player.cards)):
+                            self.log = log.Game_Drawn
+                            print("Player hand and Dealer hand are equal.GAME DRAWN")
+                        elif(len(self.dealer.cards) > len(self.player.cards)):
+                            self.log = log.PLayer_Won
+                            print("Player hand and Dealer hand are equal. PLAYER WON by the count of cards.")
+                        else:
+                            self.log = log.Dealer_Won
+                            print("Player hand and Dealer hand are equal. DEALER WON by the count of cards.")
+                    else:
+                        self.log = log.PLayer_Won
+                        print("\nPlayer wins")
+                        break
+                else:
+                    print(self.player)
+                    print("____________________________________________________________")
+            elif (choice == 'S' or choice =='s'):
+                if(self.dealer.hand > self.player.hand):
+                    self.log = log.Dealer_Won
+                break
+            else:
+                self.log = log.Invalid_Choice_Interupption
+                gameStatus = True
+                print("\n**** Invalid Choice - GAME INTERRUPTED ****")
+                print("\n")
+                break
+        return gameStatus
+    
+    def dealerTurn(self):
+        while(self.dealer.hand<=17):
+            self.dealer.cards=np.append(self.dealer.cards,self.deck[0])
+            self.dealer.cardsSign = np.append(self.dealer.cardsSign, +1)
+            self.deck = self.deck[1:]
+            self.dealer.hand = self.handValue(self.dealer)
+        print(self.player)
+        print(self.dealer)
+        return    
+    
     def restart(self):
         self.deck = deck_lookup.flatten()
         self.dealerCards = []
@@ -58,149 +213,39 @@ class BlackJack():
         self.dealerHand = 0
         #1.deck , 2.dealer, 3.player, 4.sign
         self.gameStatus = np.full((13,4,4),0)
-    
-    def PlayerHand(self):
-        x = zip(np.sort(self.playerCards), np.argsort(self.playerCards))
-        self.playerHand = 0
-        for i,j in x:
-            if i[0].isnumeric() & (i[0] != '1'):
-                self.playerHand += int(i[0])*self.playerCardsSign[j]
-            elif i[0] == 'a':
-                self.playerHand += self.ace_val(self.playerHand,self.playerCardsSign[j])
-            else:
-                self.playerHand += 10*self.playerCardsSign[j]
 
-    def DealerHand(self):
-        x = zip(np.sort(self.dealerCards), np.argsort(self.dealerCards))
-        self.dealerHand = 0 
-        for i,j in x:
-            if i[0].isnumeric() & (i[0] != '1'):
-                self.dealerHand += int(i[0])*self.dealerCardsSign[j]
-            elif i[0] == 'a':
-                self.dealerHand += self.ace_val(self.dealerHand,self.dealerCardsSign[j])
-            else:
-                self.dealerHand += 10*self.dealerCardsSign[j]
-    
-    #each turn, player gets asked whether they want to add or subtract the next card value before the next card is dealt. If its above 21, automatically busts, if not keep going until stand or bust
-    def hit(self):
-      choice2 = input("Press + to add next card to total!! or Press - to subtract next card to total")
-      if choice2 == '+':
-        self.playerCards=np.append(self.playerCards,self.deck[0])
-        self.playerCardsSign = np.append(self.playerCardsSign, +1)
-        self.deck = self.deck[1:]
-        self.PlayerHand()
-        return 1
-      elif choice2 == '-':
-        self.playerCards=np.append(self.playerCards,self.deck[0])
-        self.playerCardsSign = np.append(self.playerCardsSign, -1)
-        self.deck = self.deck[1:]
-        self.PlayerHand()
-        return 1
-      return 0
-  
-    def stand(self): #no more hits on players card
-        self.dealerTurn()
-        return self.compare() 
-    
-    def bust(self):
-      if self.playerHand>21:
-        return "player Busted"
-      elif self.dealerHand>21:
-        return "Dealer Busted"
-      
-    def compare(self): #compare player and dealers card value to determine who wins
-        if self.dealerHand < self.playerHand:
-        	print("Player wins")
-        elif self.dealerHand > self.playerHand:
-        	print("Dealer wins")
-        else:
-        	print("Draw")
-        #Pself.restart()
-        return 
-    
-    def dealerTurn(self):
-        #Dealer keeps hitting untill he reaches a score of 17  irrespective of players score
-        while(self.dealerHand < 17 ):
-            self.dealerCards=np.append(self.dealerCards,self.deck[0])
-            self.dealerCardsSign = np.append(self.dealerCardsSign, +1)
-            self.deck = self.deck[1:]
-            self.DealerHand()
-        return
-     
 
 if __name__ == "__main__":
+    #choose num deck
     while True:
         a = input("\nEnter an action: P: PLAY, Q:QUIT - ")
         if(a == "p" or a == "P"):
+
             print("**** GAME BEGINS ****")
-            #threshold = input("Please select your threshold or Press any alphabet key for Default value of 21")
-            #if(threshold.isnumeric() & )
             carddeck = BlackJack()
+
             print("\nDeck:")
             print(carddeck.deck)
+
             print("\n......Dealing cards......")
             print("\n....Shuffing the deck....")
             carddeck.deal()
-            #print("\nDealer Cards:")
-            #print(carddeck.dealerCards) #better if player doesn't know what cards the dealer has
-            print("\nPlayer Cards:")
-            print(carddeck.playerCards)
-            #print(carddeck.face_value())
-            print("\n Player Score :",carddeck.playerHand)
-            print("\n Dealer Cards:")
-            print(carddeck.dealerCards[0])
+
+            print(carddeck.player)
+            print("\n __Dealer__:")
+            print(carddeck.dealer.cards[0])
             print("____________________________________________________________")
-            #print(carddeck.dealerCards)
-            # print("\nDeck after Dealing: ")
-            # print(carddeck.deck) #not necessary to show the deck after deck is dealt.
 
             #implementation of the hit function
-            while True:
-                choice=input("\nDo you want to Hit [Press H] or Stand [Press S]")
-                if (choice == 'H' or choice ==  'h'):
-                    hitVal = carddeck.hit()
-                    if(hitVal == 0):
-                        print("\n**** Invalid Choice - GAME INTERRUPTED ****")
-                        print("\n")
-                        break
-                    if(carddeck.playerHand > 21 or carddeck.playerHand <= 1):
-                        print("\nPlayer Cards:", carddeck.playerCards)
-                        print("\nPlayer score:", carddeck.playerHand)
-                        print("\nDealer Cards:", carddeck.dealerCards)
-                        print("\nDealer SCore:", carddeck.dealerHand)
-                        print("\nBusted the threshold - You Lost")
-                        break
-                    elif(carddeck.playerHand == 21):
-                        print("\nPlayer Cards:", carddeck.playerCards)
-                        print("\nPlayer score:", carddeck.playerHand)
-                        print("\nDealer Cards:", carddeck.dealerCards)
-                        print("\nDealer SCore:", carddeck.dealerHand)
-                        if(carddeck.dealerHand == 21):
-                            if(len(carddeck.dealerCards) == len(carddeck.playerCards)):
-                                print("Player hand and Dealer hand are equal.GAME DRAWN")
-                            elif(len(carddeck.dealerCards) > len(carddeck.playerCards)):
-                                print("Player hand and Dealer hand are equal. DEALER WON by the count of cards.")
-                            else:
-                                print("Player hand and Dealer hand are equal. PLAYER WON by the count of cards.")
-                        else:
-                            print("\nPlayer wins")
-                        break
-                    else:
-                        print("\nPlayer Cards:", carddeck.playerCards)
-                        print("\nPlayer score:", carddeck.playerHand)
-                elif (choice == 'S' or choice =='s'):
-                    carddeck.stand()
-                    print("\nPlayer Cards:", carddeck.playerCards)
-                    print("\nPlayer score:", carddeck.playerHand)
-                    print("\nDealer Cards:", carddeck.dealerCards)
-                    print("\nDealer Score:", carddeck.dealerHand)
-                    print("____________________________________________________________")
-                    break
+            print("\n** PLAYERS TURN  **")
+
+            if not carddeck.playerTurn():
+                print("\n** DEALERS TURN **")
+                carddeck.dealerTurn()
+                if(carddeck.dealer.hand>21):
+                    print("Dealer busted -- Player Wins")
                 else:
-                    print("\n**** Invalid Choice - GAME INTERRUPTED ****")
-                    print("\n")
-                    break
-                print("____________________________________________________________")
+                    carddeck.compare()
         elif(a == 'q' or a=="Q"):
             break
         else:

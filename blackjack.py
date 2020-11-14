@@ -8,6 +8,12 @@ groups = np.array(["_Clubs", "_Diamonds", "_Hearts", "_Spade"], dtype=str)
 value = np.array(["2","3","4","5","6","7","8","9","10","J","Q","K","ace"],dtype=str).reshape(13,1)
 deck_lookup = np.char.add(value,groups)
 global player_sum, dealer_sum
+playerlose = 0
+playerwin = 0
+dealerwin = 0
+dealerlose = 0
+draw = 0
+totalgames = 0
 
 class Player():
     def __init__(self):
@@ -55,6 +61,12 @@ class BlackJack():
 
     def __shuffleDeck(self):
         random.shuffle(self.deck)
+   
+    def AddDecks(self):
+        y = int(input("How many decks do u want to add to current deck?")) 
+        copy = print(','.join(list(self.deck)) * y) 
+        x = np.sort(copy,axis =None)
+        print(x)
     
     def deal(self):
         self.__shuffleDeck()
@@ -119,12 +131,18 @@ class BlackJack():
             return "Dealer Busted"
  
     def compare(self): #compare player and dealers card value to determine who wins
+        global playerwin,playerlose,dealerwin,dealerlose,totalgames,draw
         if self.dealer.hand < self.player.hand:
-        	print("Player wins")
+            print("Player wins")
+            playerwin += 1
+            dealerlose += 1
         elif self.dealer.hand > self.player.hand:
-        	print("Dealer wins")
+            print("Dealer wins")
+            dealerwin += 1
+            playerlose += 1
         else:
-        	print("Draw")
+            print("Draw")
+            draw += 1
         #self.restart()
         return 
 
@@ -143,6 +161,7 @@ class BlackJack():
         """
         Player Controls Implementation
         """
+        global playerwin,playerlose,dealerwin,dealerlose,totalgames,draw
         gameStatus = False
         while True:
             choice=input("\nDo you want to Hit [Press H] or Stand [Press S]")
@@ -155,12 +174,14 @@ class BlackJack():
                     print("\n**** Invalid Choice - GAME INTERRUPTED ****")
                     print("\n")
                     break
-                if(self.player.hand > 21 or self.player.hand <= 1):
+                if(self.player.hand > 21 or self.player.hand < 1):
                     self.log = log.Player_Busted
                     gameStatus = True
                     print(self.player)
                     print(self.dealer)
                     print("\nBusted the threshold - You Lost")
+                    playerlose += 1
+                    dealerwin += 1
                     break
                 elif(self.player.hand == 21):
                     gameStatus = True
@@ -223,11 +244,12 @@ if __name__ == "__main__":
 
             print("**** GAME BEGINS ****")
             carddeck = BlackJack()
-
+            totalgames += 1
             print("\nDeck:")
             print(carddeck.deck)
 
             print("\n......Dealing cards......")
+            carddeck.AddDecks()
             print("\n....Shuffing the deck....")
             carddeck.deal()
 
@@ -244,10 +266,22 @@ if __name__ == "__main__":
                 carddeck.dealerTurn()
                 if(carddeck.dealer.hand>21):
                     print("Dealer busted -- Player Wins")
+                    playerwin += 1
+                    dealerlose += 1
                 else:
                     carddeck.compare()
         elif(a == 'q' or a=="Q"):
             break
         else:
             print("Invalid Choice. Please try again")
+    print("Total Numbers of games played are ", totalgames)
+    print("Total Numbers of player won are ", playerwin)
+    print("Total Numbers of player lost are ", playerlose)
+    print("Total Numbers of dealer won are ", dealerwin)
+    print("Total Numbers of dealer lost are ", dealerlose)
+    print("Win percentage for player is ", ((playerwin/totalgames)*100))
+    print("Lose percentage for player is ", ((playerlose/totalgames)*100))
+    print("Win percentage for dealer is ", ((dealerwin/totalgames)*100))
+    print("Lose percentage for dealer is ", ((dealerlose/totalgames)*100))
+    print("Draw game percentage is", ((draw/totalgames)*100))
     

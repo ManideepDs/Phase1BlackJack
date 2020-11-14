@@ -8,10 +8,11 @@ import matplotlib.pyplot as plt
 groups = np.array(["_Clubs", "_Diamonds", "_Hearts", "_Spade"], dtype=str)
 value = np.array(["2","3","4","5","6","7","8","9","10","J","Q","K","ace"],dtype=str).reshape(13,1)
 deck_lookup = np.char.add(value,groups)
+global player_sum, dealer_sum
 playerlose = 0
 playerwin = 0
 dealerwin = 0
-dealerlose = 0 
+dealerlose = 0
 draw = 0
 totalgames = 0
 
@@ -61,6 +62,12 @@ class BlackJack():
 
     def __shuffleDeck(self):
         random.shuffle(self.deck)
+   
+    def AddDecks(self):
+        y = int(input("How many decks do u want to add to current deck?")) 
+        copy = print(','.join(list(self.deck)) * y) 
+        x = np.sort(copy,axis =None)
+        print(x)
     
     def deal(self):
         self.__shuffleDeck()
@@ -125,46 +132,18 @@ class BlackJack():
             return "Dealer Busted"
  
     def compare(self): #compare player and dealers card value to determine who wins
-        global playerlose, playerwin, dealerwin, dealerlose, draw, totalgames
-        if(carddeck.dealer.hand>21):
-            print("Dealer busted -- Player Wins")
-            playerwin += 1
-            dealerlose += 1
-        elif(carddeck.player.hand == 21) and (carddeck.dealer.hand == 21):
-            if(len(carddeck.dealer.cards) == len(carddeck.player.cards)):
-                print("Player hand and Dealer hand are equal. GAME DRAWN")
-                draw += 1
-            elif(len(carddeck.dealer.cards) > len(carddeck.player.cards)):
-                print("Player hand and Dealer hand are equal. PLAYER won by the count of cards.")
-                playerwin += 1
-                dealerlose += 1
-            else:
-                print("Player hand and Dealer hand sare equal. Dealer won by the count of cards.") 
-                dealerwin += 1
-                playerlose += 1
-        elif(carddeck.player.hand == carddeck.dealer.hand):
-            if(len(carddeck.dealer.cards) == len(carddeck.player.cards)):
-                print("Player hand and Dealer hand are equal. GAME DRAWN")
-                draw += 1
-            elif(len(carddeck.dealer.cards) > len(carddeck.player.cards)):
-                print("Player hand and Dealer hand are equal. PLAYER won by the count of cards.")
-                playerwin += 1
-                dealerlose += 1
-            else:
-                print("Player hand and Dealer hand are equal. Dealer won by the count of cards.") 
-                dealerwin += 1
-                playerlose += 1
-        elif self.dealer.hand < self.player.hand:
+        global playerwin,playerlose,dealerwin,dealerlose,totalgames,draw
+        if self.dealer.hand < self.player.hand:
             print("Player wins")
             playerwin += 1
             dealerlose += 1
         elif self.dealer.hand > self.player.hand:
+            print("Dealer wins")
             dealerwin += 1
             playerlose += 1
-            print("Dealer wins")
         else:
-            draw
-        	print("Draw")
+            print("Draw")
+            draw += 1
         #self.restart()
         return 
 
@@ -183,7 +162,7 @@ class BlackJack():
         """
         Player Controls Implementation
         """
-        global playerlose, playerwin, dealerwin, dealerlose, draw, totalgames
+        global playerwin,playerlose,dealerwin,dealerlose,totalgames,draw
         gameStatus = False
         while True:
             choice=input("\nDo you want to Hit [Press H] or Stand [Press S]")
@@ -196,19 +175,21 @@ class BlackJack():
                     print("\n**** Invalid Choice - GAME INTERRUPTED ****")
                     print("\n")
                     break
-                if(self.player.hand > 21 or self.player.hand <= 1):
+                if(self.player.hand > 21 or self.player.hand < 1):
                     self.log = log.Player_Busted
                     gameStatus = True
                     print(self.player)
                     print(self.dealer)
-                    dealerwin += 1
-                    playerlose += 1
                     print("\nBusted the threshold - You Lost")
+                    playerlose += 1
+                    dealerwin += 1
                     break
                 elif(self.player.hand == 21):
                     gameStatus = True
                     print(self.player)
                     print(self.dealer)
+                    playerwin += 1
+                    dealerlose += 1
                     if(self.dealer.hand == 21):
                         if(len(self.dealer.cards) == len(self.player.cards)):
                             self.log = log.Game_Drawn
@@ -216,18 +197,16 @@ class BlackJack():
                             print("Player hand and Dealer hand are equal.GAME DRAWN")
                         elif(len(self.dealer.cards) > len(self.player.cards)):
                             self.log = log.PLayer_Won
+                            print("Player hand and Dealer hand are equal. PLAYER WON by the count of cards.")
                             playerwin += 1
                             dealerlose += 1
-                            print("Player hand and Dealer hand are equal. PLAYER WON by the count of cards.")
                         else:
                             self.log = log.Dealer_Won
+                            print("Player hand and Dealer hand are equal. DEALER WON by the count of cards.")
                             dealerwin += 1
                             playerlose += 1
-                            print("Player hand and Dealer hand are equal. DEALER WON by the count of cards.")
                     else:
                         self.log = log.PLayer_Won
-                        playerwin += 1
-                        dealerlose += 1
                         print("\nPlayer wins")
                         break
                 else:
@@ -235,12 +214,7 @@ class BlackJack():
                     print("____________________________________________________________")
             elif (choice == 'S' or choice =='s'):
                 if(self.dealer.hand > self.player.hand):
-                    print(self.player)
-                    print(self.dealer)
-                    gameStatus = True
                     self.log = log.Dealer_Won
-                    dealerwin += 1
-                    playerlose += 1
                 break
             else:
                 self.log = log.Invalid_Choice_Interupption
@@ -272,18 +246,18 @@ class BlackJack():
 
 if __name__ == "__main__":
     #choose num deck
-    #global totalgames
     while True:
         a = input("\nEnter an action: P: PLAY, Q:QUIT - ")
         if(a == "p" or a == "P"):
-            totalgames+=1
+
             print("**** GAME BEGINS ****")
             carddeck = BlackJack()
-
+            totalgames += 1
             print("\nDeck:")
             print(carddeck.deck)
 
             print("\n......Dealing cards......")
+            carddeck.AddDecks()
             print("\n....Shuffing the deck....")
             carddeck.deal()
 
@@ -296,30 +270,34 @@ if __name__ == "__main__":
             print("\n** PLAYERS TURN  **")
 
             if not carddeck.playerTurn():
-                print("\n** DEALERS TURN _ Naive AI **")
+                print("\n** DEALERS TURN **")
                 carddeck.dealerTurn()
-                carddeck.compare()
+                if(carddeck.dealer.hand>21):
+                    print("Dealer busted -- Player Wins")
+                    playerwin += 1
+                    dealerlose += 1
+                else:
+                    carddeck.compare()
         elif(a == 'q' or a=="Q"):
             break
         else:
             print("Invalid Choice. Please try again")
-    
     print("Total Numbers of games played are ", totalgames)
     print("Total Numbers of player won are ", playerwin)
     print("Total Numbers of player lost are ", playerlose)
     print("Total Numbers of dealer won are ", dealerwin)
     print("Total Numbers of dealer lost are ", dealerlose)
+    print("Total numbers of draw games are ", draw)
     print("Win percentage for player is ", ((playerwin/totalgames)*100))
     print("Lose percentage for player is ", ((playerlose/totalgames)*100))
     print("Win percentage for dealer is ", ((dealerwin/totalgames)*100))
     print("Lose percentage for dealer is ", ((dealerlose/totalgames)*100))
-    print("Draw game percentage is", ((draw/totalgames)*100))
     plt.title("Blackjack basic AI graph")
     plt.ylabel("Total Games")
     plt.xlabel("Player win/Player lose/Dealer win/Dealer lose/ Draw")
-    plt.hist(playerwin)
-    plt.hist(playerlose)
-    plt.hist(dealerwin,color = 'g')
-    plt.hist(dealerlose,color = 'r')
-    plt.hist(draw)
-    
+    plt.hist(totalgames)
+    plt.hist(playerwin,color = 'red')
+    plt.hist(playerlose,color = 'yellow')
+    plt.hist(dealerwin,color = 'green')
+    plt.hist(dealerlose,color = 'blue')
+    plt.hist(draw,color = 'orange')

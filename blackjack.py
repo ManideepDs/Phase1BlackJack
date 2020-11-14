@@ -2,6 +2,7 @@ import numpy as np
 import random
 from enum import Enum 
 import matplotlib.pyplot as plt
+import State as lc
 #Initialize the required variables
 
 #groups of deck in cards:
@@ -246,38 +247,42 @@ class BlackJack():
 
 if __name__ == "__main__":
     #choose num deck
+    carddeck = BlackJack()
     while True:
         a = input("\nEnter an action: P: PLAY, Q:QUIT - ")
         if(a == "p" or a == "P"):
-
             print("**** GAME BEGINS ****")
-            carddeck = BlackJack()
-            totalgames += 1
-            print("\nDeck:")
-            print(carddeck.deck)
+            b = input("Which AI do you want to play with? ")
+            if(b == 'b'or b == "B"):
+                #implementation of the hit function
+                print("\n** PLAYERS TURN  **")
+                totalgames += 1
+                print("\nDeck:")
+                print(carddeck.deck)
 
-            print("\n......Dealing cards......")
-            carddeck.AddDecks()
-            print("\n....Shuffing the deck....")
-            carddeck.deal()
+                print("\n......Dealing cards......")
+                carddeck.AddDecks()
+                print("\n....Shuffing the deck....")
+                carddeck.deal()
 
-            print(carddeck.player)
-            print("\n __Dealer__:")
-            print(carddeck.dealer.cards[0])
-            print("____________________________________________________________")
+                print(carddeck.player)
+                print("\n __Dealer__:")
+                print(carddeck.dealer.cards[0])
+                print("____________________________________________________________")
 
-            #implementation of the hit function
-            print("\n** PLAYERS TURN  **")
-
-            if not carddeck.playerTurn():
-                print("\n** DEALERS TURN **")
-                carddeck.dealerTurn()
-                if(carddeck.dealer.hand>21):
-                    print("Dealer busted -- Player Wins")
-                    playerwin += 1
-                    dealerlose += 1
-                else:
-                    carddeck.compare()
+                if not carddeck.playerTurn():
+                    print("\n** DEALERS TURN **")
+                    carddeck.dealerTurn()
+                    if(carddeck.dealer.hand>21):
+                        print("Dealer busted -- Player Wins")
+                        playerwin += 1
+                        dealerlose += 1
+                    else:
+                        carddeck.compare()
+                
+            elif(b == 't' or b =='T'):
+                lc.treee()
+            
         elif(a == 'q' or a=="Q"):
             break
         else:
@@ -295,7 +300,7 @@ if __name__ == "__main__":
     plt.title("Blackjack basic AI graph")
     plt.ylabel("Total Games")
     plt.xlabel("Player win/Player lose/Dealer win/Dealer lose/ Draw")
-    plt.ylim(None, totalgames)
+    plt.ylim(None,totalgames)
     plt.hist(playerwin,color = 'red')
     plt.hist(playerlose,color = 'yellow')
     plt.hist(dealerwin,color = 'green')

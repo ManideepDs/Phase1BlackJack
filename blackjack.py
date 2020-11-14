@@ -133,18 +133,46 @@ class BlackJack():
             return "Dealer Busted"
  
     def compare(self): #compare player and dealers card value to determine who wins
-        global playerwin,playerlose,dealerwin,dealerlose,totalgames,draw
-        if self.dealer.hand < self.player.hand:
+        global playerlose, playerwin, dealerwin, dealerlose, draw, totalgames
+        if(carddeck.dealer.hand>21):
+            print("Dealer busted -- Player Wins")
+            playerwin += 1
+            dealerlose += 1
+        elif(carddeck.player.hand == 21) and (carddeck.dealer.hand == 21):
+            if(len(carddeck.dealer.cards) == len(carddeck.player.cards)):
+                print("Player hand and Dealer hand are equal. GAME DRAWN")
+                draw += 1
+            elif(len(carddeck.dealer.cards) > len(carddeck.player.cards)):
+                print("Player hand and Dealer hand are equal. PLAYER won by the count of cards.")
+                playerwin += 1
+                dealerlose += 1
+            else:
+                print("Player hand and Dealer hand sare equal. Dealer won by the count of cards.") 
+                dealerwin += 1
+                playerlose += 1
+        elif(carddeck.player.hand == carddeck.dealer.hand):
+            if(len(carddeck.dealer.cards) == len(carddeck.player.cards)):
+                print("Player hand and Dealer hand are equal. GAME DRAWN")
+                draw += 1
+            elif(len(carddeck.dealer.cards) > len(carddeck.player.cards)):
+                print("Player hand and Dealer hand are equal. PLAYER won by the count of cards.")
+                playerwin += 1
+                dealerlose += 1
+            else:
+                print("Player hand and Dealer hand are equal. Dealer won by the count of cards.") 
+                dealerwin += 1
+                playerlose += 1
+        elif self.dealer.hand < self.player.hand:
             print("Player wins")
             playerwin += 1
             dealerlose += 1
         elif self.dealer.hand > self.player.hand:
-            print("Dealer wins")
             dealerwin += 1
             playerlose += 1
+            print("Dealer wins")
         else:
+            draw +=1
             print("Draw")
-            draw += 1
         #self.restart()
         return 
 
@@ -160,10 +188,7 @@ class BlackJack():
         print("\n** PLAYERS TURN  **")
 
     def playerTurn(self):
-        """
-        Player Controls Implementation
-        """
-        global playerwin,playerlose,dealerwin,dealerlose,totalgames,draw
+        global playerlose, playerwin, dealerwin, dealerlose, draw, totalgames
         gameStatus = False
         while True:
             choice=input("\nDo you want to Hit [Press H] or Stand [Press S]")
@@ -176,21 +201,19 @@ class BlackJack():
                     print("\n**** Invalid Choice - GAME INTERRUPTED ****")
                     print("\n")
                     break
-                if(self.player.hand > 21 or self.player.hand < 1):
+                if(self.player.hand > 21 or self.player.hand <= 1):
                     self.log = log.Player_Busted
                     gameStatus = True
                     print(self.player)
                     print(self.dealer)
-                    print("\nBusted the threshold - You Lost")
-                    playerlose += 1
                     dealerwin += 1
+                    playerlose += 1
+                    print("\nBusted the threshold - You Lost")
                     break
                 elif(self.player.hand == 21):
                     gameStatus = True
                     print(self.player)
                     print(self.dealer)
-                    playerwin += 1
-                    dealerlose += 1
                     if(self.dealer.hand == 21):
                         if(len(self.dealer.cards) == len(self.player.cards)):
                             self.log = log.Game_Drawn
@@ -198,26 +221,31 @@ class BlackJack():
                             print("Player hand and Dealer hand are equal.GAME DRAWN")
                         elif(len(self.dealer.cards) > len(self.player.cards)):
                             self.log = log.PLayer_Won
-                            print("Player hand and Dealer hand are equal. PLAYER WON by the count of cards.")
                             playerwin += 1
                             dealerlose += 1
+                            print("Player hand and Dealer hand are equal. PLAYER WON by the count of cards.")
                         else:
                             self.log = log.Dealer_Won
-                            print("Player hand and Dealer hand are equal. DEALER WON by the count of cards.")
                             dealerwin += 1
                             playerlose += 1
+                            print("Player hand and Dealer hand are equal. DEALER WON by the count of cards.")
                     else:
                         self.log = log.PLayer_Won
-                        print("\nPlayer wins")
                         playerwin += 1
                         dealerlose += 1
+                        print("\nPlayer wins")
                         break
                 else:
                     print(self.player)
                     print("____________________________________________________________")
             elif (choice == 'S' or choice =='s'):
                 if(self.dealer.hand > self.player.hand):
+                    print(self.player)
+                    print(self.dealer)
+                    gameStatus = True
                     self.log = log.Dealer_Won
+                    dealerwin += 1
+                    playerlose += 1
                 break
             else:
                 self.log = log.Invalid_Choice_Interupption

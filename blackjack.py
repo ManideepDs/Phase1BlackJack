@@ -209,6 +209,8 @@ class BlackJack():
                     else:
                         self.log = log.PLayer_Won
                         print("\nPlayer wins")
+                        playerwin += 1
+                        dealerlose += 1
                         break
                 else:
                     print(self.player)
@@ -248,10 +250,13 @@ class BlackJack():
 if __name__ == "__main__":
     #choose num deck
     carddeck = BlackJack()
+    gamenum = 0
     while True:
         a = input("\nEnter an action: P: PLAY, Q:QUIT - ")
         if(a == "p" or a == "P"):
             print("**** GAME BEGINS ****")
+            gamenum += 1
+            print("This is Game number", gamenum )
             b = input("Which AI do you want to play with? ")
             if(b == 'b'or b == "B"):
                 #implementation of the hit function

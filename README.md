@@ -11,3 +11,4 @@ In order to play the game:
 3) Press 'S' or 's' to use stand function, 
 4) Press '+' to add next card value to current total after hit or '-' to subtract next card value to current total after hit.
 5) Press 'P' or 'p' to play next game and 'Q' or 'q' to quit playing after every game gets over
+6) Press 'b' or 'B' to play with basic AI or press 't' or 'T' with tree AI

@@ -289,7 +289,7 @@ if __name__ == "__main__":
             carddeck = BlackJack()
             gamenum += 1
             print("This is Game number", gamenum )
-            b = input("Which AI do you want to play with? ")
+            b = input("Which AI do you want to play with? : B:Baseline AI, T:MCTS - ")
             if(b == 'b'or b == "B"):
                 #implementation of the hit function
                 print("\n** PLAYERS TURN  **")
@@ -336,10 +336,14 @@ if __name__ == "__main__":
     print("Lose percentage for dealer is ", ((dealerlose/totalgames)*100))
     plt.title("Blackjack basic AI graph")
     plt.ylabel("Total Games")
-    plt.xlabel("Player win/Player lose/Dealer win/Dealer lose/ Draw")
-    plt.ylim(None,totalgames)
-    plt.hist(playerwin,color = 'red')
-    plt.hist(playerlose,color = 'yellow')
-    plt.hist(dealerwin,color = 'green')
-    plt.hist(dealerlose,color = 'blue')
-    plt.hist(draw,color = 'orange')
+    plt.xlabel("Results")
+    plt.ylim(None,max(playerwin, playerlose))
+    objects = ('Player win', 'Player lose', 'Dealer Win', 'Dealer lose', 'Draw')
+    performance = [playerwin, playerlose, dealerwin, dealerlose, draw]
+    plt.bar(objects, performance, align = 'center', alpha = 0.5)
+    plt.show()
+    #plt.hist(playerwin,color = 'red')
+    #plt.hist(playerlose,color = 'yellow')
+    #plt.hist(dealerwin,color = 'green')
+    #plt.hist(dealerlose,color = 'blue')
+    #plt.hist(draw,color = 'orange')

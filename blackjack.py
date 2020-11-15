@@ -287,6 +287,13 @@ class State():
     def __str__(self):
         return str(self.game.player) +str(self.game.dealer)+"\nGame Status:"+ ("Dealer Leads" if(self.game.player.hand < self.game.dealer.hand) else "Player Leads")+"\n"
     
+    
+    def AddDecks(self):
+        y = int(input("How many decks do u want to add to current deck?")) 
+        copy = print(','.join(list(self.deck)) * y) 
+        x = np.sort(copy,axis =None)
+        print(x)
+    
     def gameStatus(self):
       global playerlose, playerwin, dealerwin, dealerlose, draw, totalgames
       if(self.game.dealer.hand >21 or self.game.dealer.hand <1 or (self.game.player.hand > self.game.dealer.hand)):
@@ -418,6 +425,7 @@ if __name__ == "__main__":
             break
         else:
             print("Invalid Choice. Please try again")
+    
     print("Total Numbers of games played are ", totalgames)
     print("Total Numbers of player won are ", playerwin)
     print("Total Numbers of player lost are ", playerlose)

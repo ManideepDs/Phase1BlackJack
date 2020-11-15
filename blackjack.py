@@ -335,7 +335,7 @@ if __name__ == "__main__":
     print("Win percentage for dealer is ", ((dealerwin/totalgames)*100))
     print("Lose percentage for dealer is ", ((dealerlose/totalgames)*100))
     plt.title("Blackjack basic AI graph")
-    plt.ylabel("Total Games")
+    plt.ylabel("Number of Games")
     plt.xlabel("Results")
     plt.ylim(None,max(playerwin, playerlose))
     objects = ('Player win', 'Player lose', 'Dealer Win', 'Dealer lose', 'Draw')

@@ -6,7 +6,7 @@ The code will be able to run on any python compiler and following ways:
 3) Pycharm: open pycharm -> install numpy dependency (file -> settings -> project: -> python interpreter -> '+' on top right corner -> search numpy and install) -> run the code
 
 In order to play the game:
-1) Run the code
+1) Run the blackjack.py file to play the game
 2) Press 'H' or 'h' to use hit function, 
 3) Press 'S' or 's' to use stand function, 
 4) Press '+' to add next card value to current total after hit or '-' to subtract next card value to current total after hit.

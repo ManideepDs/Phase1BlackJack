@@ -232,6 +232,7 @@ class BlackJack():
         #1.deck , 2.dealer, 3.player, 4.sign
         self.gameStatus = np.full((13,4,4),0)
 
+        
 
 if __name__ == "__main__":
     while True:

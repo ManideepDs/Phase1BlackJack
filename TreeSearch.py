@@ -75,7 +75,7 @@ class Node(object):
 
 def rollout(node, max_depth=None):
     if node.depth == max_depth or node.state.isLeaf:
-        result = node.state.state.dealer.hand - 21
+        result = node.state.state.log.value
     else:
         result = rollout(node.choose_child(), max_depth)
     node.visit_count += 1
@@ -111,8 +111,8 @@ if __name__ == "__main__":
             elif(state.childAction == decision.NegativeHit):
                 bj.hit(member = bj.dealer,sign="-")
             else:
-                print("Stand")
                 bj.stand()
+                print(bj)
                 break
             state = State(game = bj)
             node = Node(state = state)

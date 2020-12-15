@@ -8,6 +8,7 @@ import pickle as pk
 from blackjack_data import encode
 from torch.nn import Sequential, Conv2d, Linear, Flatten, LeakyReLU, Tanh
 
+
 def BlackjackNet1():
     model = Sequential(
             Flatten(),

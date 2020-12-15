@@ -3,6 +3,7 @@ from enum import Enum
 import copy
 from Play_blackjack import log, BlackJack, deck_lookup
 
+
 class decision(Enum):
     PositiveHit = 1
     NegativeHit = 2

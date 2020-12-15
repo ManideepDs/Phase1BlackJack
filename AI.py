@@ -17,6 +17,7 @@ def nn_puct(node):
     return node.children()[a]
 
 
+
 if __name__ == "__main__":
     #Problem size
     while True:

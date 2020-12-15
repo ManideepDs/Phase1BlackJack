@@ -6,17 +6,6 @@ import numpy as np
 from Play_blackjack import deck_lookup, BlackJack, log
 from BlackJackState import State, decision
 
-"""
-from blackjack_net import BlackjackNet1
-from blackjack_data import encode
-def nn_puct(node, net):
-    with tr.no_grad():
-        x = tr.stack(tuple(map(encode, [child for child in node.children()])))
-        y = net(x)
-        probs = tr.softmax(y.flatten(), dim=0)
-        a = np.random.choice(len(probs), p=probs.detach().numpy())
-    return node.children()[a]
-"""
 
 def uniform(node):
     c = np.random.choice(len(node.children()))

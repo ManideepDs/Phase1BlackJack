@@ -8,6 +8,7 @@ from Play_blackjack import BlackJack, GameStatus, log, deck_lookup
 from BlackJackState import decision, State
 from TreeSearch import Node, puct, decide_action
 
+
 def generate(num_games=2, gamesize = 1, num_rollouts=10, max_depth=4, choose_method=None):
     if choose_method is None: choose_method = puct
     data = []
